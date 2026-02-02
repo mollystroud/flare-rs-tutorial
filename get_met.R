@@ -10,11 +10,13 @@ pacman::p_load('tidyverse', 'zarr', 'Rarr', 'sf', 'reticulate')
 ################################################################################
 message("Setting up Python environment. Python must be downloaded for this to run.")
 venv_path <- file.path(getwd(), ".venv")
+py_install("dask")
 if (!dir.exists(venv_path)) {
   virtualenv_create(venv_path)
   virtualenv_install(
     venv_path,
     packages = c(
+      "dask",
       "xarray",
       "zarr",
       "certifi",
@@ -32,6 +34,7 @@ certifi <- import("certifi")
 os <- import("os")
 xr <- import("xarray")
 builtins <- import("builtins", convert = FALSE)
+
 # make sure http can be accessed
 os$environ["SSL_CERT_FILE"] <- certifi$where()
 

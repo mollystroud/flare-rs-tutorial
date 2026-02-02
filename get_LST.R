@@ -3,7 +3,7 @@
 ################################################################################
 # load in packages
 pacman::p_load('rstac', 'terra', 'stars', 'ggplot2', 'tidyterra', 'viridis', 
-       'EBImage', 'gdalcubes', 'tmap', 'dplyr', 'tidyverse', 'sf')
+       'gdalcubes', 'tmap', 'dplyr', 'tidyverse', 'sf')
 ################################################################################
 ## the below code is designed to pull landsat thermal imagery over a specified 
 # area and estimate temperature over the reservoir
