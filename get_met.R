@@ -3,7 +3,7 @@
 # Download data from dynamical.org and put into correct formatting for FLARE
 # https://dynamical.org/catalog/noaa-gefs-forecast-35-day/
 ################################################################################
-pacman::p_load('tidyverse', 'zarr', 'Rarr', 'sf', 'reticulate')
+pacman::p_load('tidyverse', 'zarr', 'Rarr', 'sf', 'reticulate', 'arrow')
 
 ################################################################################
 # Use Python env
