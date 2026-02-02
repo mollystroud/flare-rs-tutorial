@@ -30,7 +30,7 @@ find_matches <- function(bbox){
     filter(ymin < mean_y & ymax > mean_y)
   if(nrow(match > 0)){
     print(match)
-    bathy <- raster(match$file)
+    bathy <- raster(paste0("https://amnh1.osn.mghpcc.org/bio230121-bucket01/GLOBathy/", match$file))
     return(bathy)
   } else {message("No matches found")}
 }
