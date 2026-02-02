@@ -89,10 +89,11 @@ get_temp_gefs <- function(site_id, start_time, bbox, lead_time = TRUE) {
       init_time = temp$init_time
     )
   }
-  temp_df <- temp_r$to_dataframe() |>
-    py_to_r() |>
-    tibble::as_tibble() |>
-    select(-c(expected_forecast_length,
+  temp_r$to_dataframe()$reset_index()$to_csv('met_temp.csv', index = F)
+  temp_df <- read_csv('met_temp.csv', show_col_types = FALSE)
+  file.remove("met_temp.csv")
+  temp_df <- temp_df |>
+    dplyr::select(-c(expected_forecast_length,
               ingested_forecast_length,
               latitude,
               longitude,
