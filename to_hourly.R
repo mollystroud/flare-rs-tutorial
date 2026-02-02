@@ -1,4 +1,5 @@
 # function: convert dataframe to hourly time steps
+pacman::p_load("impute_TS")
 get_hourly <- function(df, mean_lon, mean_lat){
   var_order <- names(df)
   parameters <- unique(df$parameter)
