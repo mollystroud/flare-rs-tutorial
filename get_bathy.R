@@ -68,7 +68,7 @@ get_ha <- function(bathy_raster, points){
   area_layers$depths <- area_layers$depths + elev$elevation
   plot(area_layers$Area.at.z, area_layers$depths, type = 'l', 
        xlab = 'Area at Depth (m2)', ylab = 'Depth (m)', main = 'GLOBathy')
-  
+  return(area_layers)
 }
 
 
