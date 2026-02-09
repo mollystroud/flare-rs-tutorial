@@ -16,7 +16,7 @@ get_kw_US <- function(bbox){
     print(mylake)
     q <- readline("Is this the correct lake? (Y/N):  ")
   } else {
-    message("Double check your coordinates. Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")
+    message("Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")
     }
   if(tolower(q) %in% c("Y", "y", "Yes", "yes")){
     message("Downloading LAGOS Secchi information. This may take a minute.")
@@ -28,7 +28,7 @@ get_kw_US <- function(bbox){
     message("Mean secchi for this lake is ", mylake_secchi$mean_secchi)
     Kw <- 1.7 / mylake_secchi$mean_secchi
     return(Kw)
-  } else {message("Double check your coordinates. Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")}
+  } else {message("Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")}
 }
 
 get_kw_global <- function(bbox){
@@ -49,8 +49,8 @@ get_kw_global <- function(bbox){
       message("Mean secchi for this lake is ", meansecchi)
       Kw <- 1.7 / meansecchi
       return(Kw)
-    } else {message("Double check your coordinates. Your lake may not exist in the database.")}
-  } else {message("Double check your coordinates. Your lake may not exist in the database.")
+    } else {message("Your lake may not exist in the database.")}
+  } else {message("Your lake may not exist in the database.")
     }
 }
 #global <- read_csv("https://raw.githubusercontent.com/roohollahnoori/AWQDFGL/refs/heads/main/SDD.csv")
