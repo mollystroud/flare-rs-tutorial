@@ -21,22 +21,19 @@ source("01LakeInfo.R")
 # chunks of time in this section and merging the dfs together at the end
 ################################################################################
 source("get_LST.R")
-data <- get_lst(bbox, 
-        box_utm, 
+thermaldata <- get_lst(bbox, 
         paste0(start_date, "T00:00:00Z"), 
         paste0(end_date, "T00:00:00Z"))
-# mask out non-water pixels
-masked_data <- water_mask(data)
 # see what it looks like!
 ggplot() +
-  geom_stars(data = masked_data["thermal_C"]) +
+  geom_stars(data = data["thermal_C"]) +
   facet_wrap(~time) +
   theme_classic() +
   scale_fill_viridis(na.value = 'transparent') +
   labs(fill = "Temperature (C)") +
   coord_fixed()
 # get values
-thermal_vals <- get_vals(points, masked_data)
+thermal_vals <- get_vals(points, thermaldata)
 output <- clean_data(thermal_vals)
 # save out targets
 # create directory for targets file
@@ -77,7 +74,7 @@ source("get_Kw.R")
 mylake_kw <- get_kw_US(bbox)
 
 # Search for lake in global database
-mylake_kw <- get_kw_global(bbox)
+# mylake_kw <- get_kw_global(bbox)
 
 # If your lake was unavailable in either of these databases, 
 # you may set mylake_kw based on knowledge of your lake of interest
@@ -125,12 +122,6 @@ update_nml(var_list, var_name_list,
 
 
 
-
-
-
-
-
-
-
-
-
+################################################################################
+# Now, open 03FLARE to run FLARE
+################################################################################

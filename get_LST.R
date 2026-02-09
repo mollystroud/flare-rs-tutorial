@@ -38,7 +38,6 @@ get_lst <- function(bbox, start_date, end_date) {
       function(f) f$properties$platform %in% c("landsat-8", "landsat-9"),
       items$features
     )
-    
     # define the cube space
     cube <- cube_view(srs = "EPSG:4326",
                       extent = list(t0 = start_date, 
@@ -47,8 +46,8 @@ get_lst <- function(bbox, start_date, end_date) {
                                     right = bbox[3],
                                     top = bbox[4], 
                                     bottom = bbox[2]),
-                      dx = 0.0003, # 30 m resolution
-                      dy = 0.0003, 
+                      dx = 0.00031, # 30 m resolution
+                      dy = 0.00031, 
                       dt = "P1D",
                       aggregation = "median", 
                       resampling = "average")
@@ -59,10 +58,12 @@ get_lst <- function(bbox, start_date, end_date) {
     #url_fun = function(url) paste0("/vsicurl/", url))  # helps GDAL access
     # make raster cube
     data <- raster_cube(image_collection = col, 
-                        view = cube)
-    data <- rename_bands(data, lwir11 = "thermal", qa_pixel = "QA")
+                        view = cube) |>
+      apply_pixel(expr = "((qa_pixel & (1<<7)) != 0) * lwir11", names = "thermal") |>
+      apply_pixel(expr = "(thermal * 0.00341802) - 124.15", names = "thermal_C")
     # make stars obj
     ls_stars <- st_as_stars(data)
+    ls_stars$thermal_C[ls_stars$thermal_C == -124.15] <- NA
     # remove empty dates
     arr <- ls_stars[[1]] # extract raw array (x, y, time)
     non_na_counts <- apply(arr, 3, function(slice) sum(!is.na(slice))) # count non-NA pixels for each time
@@ -70,33 +71,12 @@ get_lst <- function(bbox, start_date, end_date) {
     # build cleaned object by stacking only valid slices
     slices <- lapply(valid_idx, function(i) ls_stars[,,, i, drop = FALSE])
     clean_ls_stars <- do.call(c, c(slices, along = "time"))
-    return(clean_ls_stars)
-    }
-}
-
-################################################################################
-# function to get only water pixels and correct temp
-################################################################################
-#thermal_data <- data
-water_mask <- function(thermal_data) {
-  # make array
-  thermal_arr <- thermal_data$thermal
-  qa_arr <- thermal_data$QA
-  # get only water with bitwise flags
-  water <- (bitwAnd(qa_arr, bitwShiftL(1, 7)) == 0)
-  # get water or NA pixels
-  thermal_arr[water | is.na(qa_arr)] <- NA_real_
-  # convert to celsius
-  thermal_C <- (thermal_arr * 0.00341802 + 149) - 273.15
-  # make stars object again
-  thermal_masked_vec <- thermal_data["thermal"]   # copy dimensions
-  thermal_masked_vec$thermal_C <- thermal_C
-  
-  if(all(is.na(thermal_masked_vec$thermal_C))){
-    message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
-    return( )
-  } else {
-    return(thermal_masked_vec)}
+    if(all(is.na(clean_ls_stars$thermal))){
+      message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
+      return( )
+    } else {
+      return(clean_ls_stars)}
+  }
 }
 ################################################################################
 # function to extract values and write out csv
