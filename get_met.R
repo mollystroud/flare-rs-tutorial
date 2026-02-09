@@ -156,8 +156,8 @@ get_stage_2 <- function(start_date, end_date, site, bbox){
 # stage 3 function
 get_stage_3 <- function(start_date, site, bbox){
   # get date sequence
-  dates <- seq(as.POSIXct(as.Date(start_date) - (5)), 
-               as.POSIXct(start_date), 
+  dates <- seq(as.POSIXct(start_date),
+               as.POSIXct(as.Date(start_date) + (5)),
                by = ("3 hours"))
   # empty df
   stage3 <- data.frame()
