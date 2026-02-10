@@ -26,7 +26,7 @@ thermaldata <- get_lst(bbox,
         paste0(end_date, "T00:00:00Z"))
 # see what it looks like!
 ggplot() +
-  geom_stars(data = data["thermal_C"]) +
+  geom_stars(data = thermaldata["thermal_C"]) +
   facet_wrap(~time) +
   theme_classic() +
   scale_fill_viridis(na.value = 'transparent') +
@@ -74,14 +74,14 @@ source("get_Kw.R")
 mylake_kw <- get_kw_US(bbox)
 
 # Search for lake in global database
-# mylake_kw <- get_kw_global(bbox)
+mylake_kw <- get_kw_global(bbox)
 
 # If your lake was unavailable in either of these databases, 
 # you may set mylake_kw based on knowledge of your lake of interest
 # If your lake is very turbid (Secchi < 1):
 # mylake_kw <- 1.7/1
 # If your lake is somewhere between turbid and clear (Secchi > 1, < 5):
-# mylake_kw <- 1.7/3
+mylake_kw <- 1.7/3
 # If your lake is very clear (Secchi > 5):
 # mylake_kw <-  1.7/5
 
@@ -91,15 +91,16 @@ mylake_kw <- get_kw_US(bbox)
 ################################################################################
 source("get_SedZoneInfo.R")
 # first get air temperature data over a few years
-era5_download <- get_historical_weather(latitude = points_df$lat,
-                                        longitude = points_df$lon,
+era5_download <- get_historical_weather(latitude = points_df$lat[1],
+                                        longitude = points_df$lon[1],
                                         start_date = Sys.Date() - 2000, # get a long enough date range
                                         end_date = Sys.Date(),
                                         variables = c("temperature_2m"))
 # the average sediment zone temperature is comparable to average air temperature
 sed_temp <- mean(era5_download$prediction)
 # if the lake is < 5 m deep, the peak doy and amplitude are also comparable to air temp
-sed_data <- get_sed_zone_data(era5_download, (max(values(bathy), na.rm = T) - min(values(bathy), na.rm = T)))
+sed_data <- get_sed_zone_data(era5_download, 
+                              depth = (max(values(bathy), na.rm = T) - min(values(bathy), na.rm = T)))
 print(sed_data)
 
 ################################################################################
@@ -109,13 +110,15 @@ source("edit_nml_functions.R")
 remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
 library(glmtools)
 
-var_list <- list(site, mylake_kw, site, points_df[[2]], points_df[[1]],
+var_list <- list(site, mylake_kw, site, points_df[[2]][1], points_df[[1]][1],
                  dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z),
                  (max(ha$depths) - min(ha$depths)), 
-                 sed_temp, c(sed_data[1], sed_data[2]), c(sed_data[3], sed_data[4]))
+                 sed_temp, sed_data$sed_amp, sed_data$doy,
+                 sed_data$zone_heights, sed_data$nzones[1])
 var_name_list <- list("sim_name", "Kw", "lake_name", "latitude", "longitude",
                       "bsn_vals", "H", "A", "lake_depth",
-                      "sed_temp_mean", "sed_temp_amplitude", "sed_temp_peak_doy")
+                      "sed_temp_mean", "sed_temp_amplitude", "sed_temp_peak_doy",
+                      "zone_heights", "n_zones")
 # create list of variable values & names for input to nml
 update_nml(var_list, var_name_list, 
            working_directory = 'configuration/analysis', nml = 'glm3_base.nml')
