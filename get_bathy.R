@@ -63,7 +63,7 @@ get_ha <- function(bathy_raster, points){
   ## plot the bathymetry profile
   area_layers$depths <- area_layers$depths*-1 #make it so that surface (0m) is at top
   # add actual elevation
-  elev <- elevatr::get_elev_point(points[1,])
+  elev <- elevatr::get_elev_point(points[1,], src = 'aws')
   if(is.na(elev$elevation) == TRUE){
     q <- readline("elevatr is unavailable. Please type an approximate elevation estimate of your lake: ")
     area_layers$depths <- area_layers$depths + as.numeric(q)
