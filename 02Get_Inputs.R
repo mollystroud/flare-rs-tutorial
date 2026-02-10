@@ -104,7 +104,7 @@ sed_data <- get_sed_zone_data(era5_download,
 print(sed_data)
 
 ################################################################################
-# 6. Create GLM file
+# 6. Create GLM file and config files
 ################################################################################
 source("edit_nml_functions.R")
 remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
@@ -121,10 +121,17 @@ var_name_list <- list("sim_name", "Kw", "lake_name", "latitude", "longitude",
                       "zone_heights", "n_zones")
 # create list of variable values & names for input to nml
 update_nml(var_list, var_name_list, 
-           working_directory = 'configuration/analysis', nml = 'glm3_base.nml')
+           working_directory = 'configuration/analysis', nml = 'glm3.nml')
 
-
-
+# update configure_flare
+yml <- yaml::read_yaml("configuration/analysis/configure_flare.yml")
+yml$location$site_id <- site
+yml$location$latitude <- points_df[[2]][1]
+yml$location$longitude <- points_df[[1]][1]
+yml$model_settings$modeled_depths <- seq(0, maxValue(bathy)[[1]])
+yml$default_init$lake_depth <- floor(maxValue(bathy)[[1]])
+yml$default_init$temp <- rep(5, times = length(seq(0, maxValue(bathy)[[1]])))
+yml$default_init$temp_depths <- seq(0, maxValue(bathy)[[1]])
 ################################################################################
 # Now, open 03FLARE to run FLARE
 ################################################################################
