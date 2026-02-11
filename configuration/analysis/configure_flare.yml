@@ -5,17 +5,16 @@ location:
   longitude: -79.81607
 da_setup:
   da_method: enkf
-  par_fit_method: inflate
+  par_fit_method: perturb
   ensemble_size: 31
-  localization_distance: 2
-  pf_always_resample: no
+  localization_distance: .na
   no_negative_states: yes
   assimilate_first_step: no
   use_obs_constraint: yes
-  use_inflation_factor: yes
+  use_inflation_factor: no
   inflation_factor: 1.08
-  inflation_only_at_da: yes
-  add_random_noise: no
+  inflation_only_at_da: no
+  add_random_noise: 2
 model_settings:
   ncore: 10
   max_model_layers: 75
