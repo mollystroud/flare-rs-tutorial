@@ -74,14 +74,17 @@ source("get_Kw.R")
 mylake_kw <- get_kw_US(bbox)
 
 # Search for lake in global database
-mylake_kw <- get_kw_global(bbox)
+#mylake_kw <- get_kw_global(bbox)
 
 # If your lake was unavailable in either of these databases, 
 # you may set mylake_kw based on knowledge of your lake of interest
+
 # If your lake is very turbid (Secchi < 1):
 # mylake_kw <- 1.7/1
+
 # If your lake is somewhere between turbid and clear (Secchi > 1, < 5):
-mylake_kw <- 1.7/3
+#mylake_kw <- 1.7/3
+
 # If your lake is very clear (Secchi > 5):
 # mylake_kw <-  1.7/5
 
@@ -132,6 +135,8 @@ yml$model_settings$modeled_depths <- seq(0, maxValue(bathy)[[1]])
 yml$default_init$lake_depth <- floor(maxValue(bathy)[[1]])
 yml$default_init$temp <- rep(5, times = length(seq(0, maxValue(bathy)[[1]])))
 yml$default_init$temp_depths <- seq(0, maxValue(bathy)[[1]])
+yaml::write_yaml(yml, "configuration/analysis/configure_flare.yml")
+
 ################################################################################
 # Now, open 03FLARE to run FLARE
 ################################################################################
