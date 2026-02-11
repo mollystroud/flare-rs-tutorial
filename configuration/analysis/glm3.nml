@@ -1,0 +1,105 @@
+&glm_setup
+   sim_name = 'silv'
+   max_layers = 500
+   min_layer_vol = 0.025
+   min_layer_thick = 0.2
+   max_layer_thick = 0.8
+   non_avg = .true.
+/
+&light
+   light_mode = 0
+   n_bands = 4
+   light_extc = 1, 0.5, 2, 4
+   energy_frac = 0.51, 0.45, 0.035, 0.005
+   Benthic_Imin = 10
+   Kw = 0.5666667
+/
+&mixing
+   coef_mix_conv = 0.2
+   coef_wind_stir = 0.23
+   coef_mix_shear = 0.3
+   coef_mix_turb = 0.51
+   coef_mix_KH = 0.5
+   coef_mix_shreq = 0
+   deep_mixing = 2
+   coef_mix_hyp = 0.5
+/
+&morphometry
+   lake_name = 'silv'
+   latitude = -37.8472
+   longitude = 145.4138
+   bsn_len = 855.03
+   bsn_wid = 109.46
+   bsn_vals = 14
+   H = 279.180580914021, 280.180580914021, 281.180580914021, 282.180580914021, 283.180580914021, 284.180580914021, 285.180580914021, 286.180580914021, 287.180580914021, 288.180580914021, 289.180580914021, 290.180580914021, 291.180580914021, 292.180580914021
+   A = 14239.2035835416, 59808.9063030888, 136743.945618657, 245044.321530247, 384710.034037858, 555741.083141491, 758137.468841145, 991899.19113682, 1257026.25002852, 1553518.64551623, 1881376.37759997, 2240599.44627973, 2631187.85155552, 3053141.59342732
+/
+&time
+   timefmt = 2
+   start = '2013-05-1512:00'
+   stop = '2018-12-3112:00'
+   dt = 3600
+   num_days = 1
+   timezone = -5
+/
+&output
+   out_dir = './'
+   out_fn = 'output'
+   nsave = 24
+/
+&init_profiles
+   num_heights = 27
+   lake_depth = 13
+   the_heights = 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13
+   the_temps = 4.8132, 4.791, 4.7799, 4.778633333, 4.778, 4.7667, 4.76105, 4.74285, 4.73375, 4.73785, 4.7399, 4.7353, 4.733, 4.730233333, 4.72885, 4.717416667, 4.7117, 4.713966667, 4.7151, 4.7057, 4.701, 4.700466667, 4.7002, 4.7002, 4.7002, 4.7002, 4.7002
+   the_sals = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   num_wq_vars = 0
+   wq_names = ''
+   snow_thickness = 0
+   white_ice_thickness = 0
+   blue_ice_thickness = 0
+   avg_surf_temp = 5
+   restart_variables = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   restart_mixer_count = 0
+/
+&meteorology
+   met_sw = .true.
+   lw_type = 'LW_IN'
+   rain_sw = .false.
+   atm_stab = 0
+   catchrain = .false.
+   rad_mode = 1
+   albedo_mode = 1
+   cloud_mode = 4
+   meteo_fl = 'inputs/met_avg_filtered.csv'
+   subdaily = .true.
+   wind_factor = 1
+   sw_factor = 1
+   lw_factor = 1
+   at_factor = 1
+   rh_factor = 1
+   rain_factor = 1
+   cd = 0.0013
+   ce = 0.0013
+   ch = 0.0013
+   time_fmt = 'YYYY-MM-DD hh:mm:ss'
+/
+&snowice
+   snow_albedo_factor = 0.8
+   snow_rho_max = 300
+   snow_rho_min = 50
+   min_ice_thickness = 0.001
+   dt_iceon_avg = 0.01
+   avg_surf_temp_thres = 0.5
+/
+&sediment
+   benthic_mode = 2
+   sed_heat_model = 1
+   n_zones = 3
+   zone_heights = 4.98428942759832, 9.96857885519663, 14.952868282795
+   sed_heat_Ksoil = 1.2, 1.2
+   sed_temp_depth = 0.5, 0.5
+   sed_temp_mean = 13.41594
+   sed_temp_amplitude = 5.51958367293832, 3.86159052606304, 7.88944444444444
+   sed_temp_peak_doy = 302, 26.6666666666667, 24
+/

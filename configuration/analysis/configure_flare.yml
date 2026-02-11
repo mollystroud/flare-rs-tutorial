@@ -1,0 +1,119 @@
+location:
+  site_id: blank
+  name: blank
+  latitude: 37.307
+  longitude: -79.81607
+da_setup:
+  da_method: enkf
+  par_fit_method: inflate
+  ensemble_size: 31
+  localization_distance: 2
+  pf_always_resample: no
+  no_negative_states: yes
+  assimilate_first_step: no
+  use_obs_constraint: yes
+  use_inflation_factor: yes
+  inflation_factor: 1.08
+  inflation_only_at_da: yes
+  add_random_noise: no
+model_settings:
+  ncore: 10
+  max_model_layers: 75
+  model_name: glm
+  base_GLM_nml: glm3.nml
+  modeled_depths:
+  - 0.0
+  - 0.5
+  - 1.0
+  - 1.5
+  - 2.0
+  - 2.5
+  - 3.0
+  - 3.5
+  - 4.0
+  - 4.5
+  - 5.0
+  - 5.5
+  - 6.0
+  - 6.5
+  - 7.0
+  - 7.5
+  - 8.0
+  - 8.5
+  - 9.0
+  - 9.5
+  - 10.0
+  - 10.5
+  - 11.0
+  - 11.5
+  - 12.0
+  - 12.5
+  - 13.0
+  par_config_file: parameter_calibration_config.csv
+  obs_config_file: observations_config.csv
+  states_config_file: states_config.csv
+default_init:
+  lake_depth: 13
+  temp:
+  - 4.8
+  - 4.8
+  - 4.78
+  - 4.76
+  - 4.73
+  - 4.73
+  - 4.73
+  - 4.73
+  - 4.71
+  - 4.71
+  - 4.7
+  - 4.7
+  - 4.7
+  - 4.7
+  temp_depths:
+  - 0.1
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  salinity: 0.0
+  snow_thickness: 0.0
+  white_ice_thickness: 0.0
+  blue_ice_thickness: 0.0
+flows:
+  include_inflow: no
+  include_outflow: no
+  future_inflow_model: future/model_id=historical_interp
+  historical_inflow_model: historical/model_id=historical_interp
+  local_inflow_directory: drivers/inflow
+  future_outflow_model: future/model_id=historical_interp
+  historical_outflow_model: historical/model_id=historical_interp
+  local_outflow_directory: drivers/outflow
+  use_ler_vars: no
+  use_flows_s3: no
+met:
+  future_met_model: gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}
+  future_met_use_s3: no
+  historical_met_use_s3: no
+  forecast_lag_days: 0
+  historical_met_model: gefs-v12/stage3/site_id={site_id}
+  local_met_directory: drivers/met
+  use_ler_vars: no
+  use_openmeteo: no
+uncertainty:
+  observation: yes
+  process: yes
+  weather: yes
+  initial_condition: yes
+  parameter: yes
+  inflow: yes
+output_settings:
+  diagnostics_names: extc
