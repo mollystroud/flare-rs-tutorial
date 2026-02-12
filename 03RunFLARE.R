@@ -4,10 +4,9 @@
 ################################################################################
 # This script will run FLARE using the inputs created in 02Get_Inputs
 pacman::p_load('tidyverse', 'lubridate')
-remotes::install_github("FLARE-forecast/FLAREr", force = T)
+#remotes::install_github("FLARE-forecast/FLAREr", force = T, upgrade = 'never', ref = 'v3.1-dev')
 
-# Point FLARE to GLM location
-Sys.setenv('GLM_PATH'='/binary/macos/glm')
+
 
 
 # This need to be set to run each experiment
@@ -23,6 +22,8 @@ configure_run_file <- "configure_run.yml"
 use_s3 <- FALSE
 
 lake_directory <- here::here()
+# Point FLARE to GLM location
+Sys.setenv('GLM_PATH'=paste0(lake_directory, '/binary/macos/glm'))
 options(future.globals.maxSize = 891289600)
 
 walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
@@ -68,7 +69,7 @@ sims <- sims |>
 
 sims$horizon[1:length(models)] <- 0
 
-
+i <- 1
 for(i in starting_index:nrow(sims)){
   
   message(paste0("index: ", i))
@@ -145,7 +146,8 @@ for(i in starting_index:nrow(sims)){
                                                        end_datetime = config$run_config$end_datetime,
                                                        forecast_start_datetime = config$run_config$forecast_start_datetime,
                                                        forecast_horizon =  config$run_config$forecast_horizon)
-  
+  states_non_vertical <- NULL
+  states_non_vertical$depth_sd <- 0
   
   states_config <- FLAREr:::generate_states_to_obs_mapping(states_config, obs_config)
   
@@ -157,6 +159,7 @@ for(i in starting_index:nrow(sims)){
                                                obs,
                                                config,
                                                obs_non_vertical = obs_non_vertical)
+  
   
   da_forecast_output <- FLAREr:::run_da_forecast(states_init = init$states,
                                                  pars_init = init$pars,
@@ -172,8 +175,8 @@ for(i in starting_index:nrow(sims)){
                                                  obs_config = obs_config,
                                                  da_method = config$da_setup$da_method,
                                                  par_fit_method = config$da_setup$par_fit_method,
-                                                 obs_secchi = obs_non_vertical$obs_secchi,
-                                                 obs_depth = obs_non_vertical$obs_depth)
+                                                 obs_non_vertical = obs_non_vertical,
+                                                 states_non_vertical = states_non_vertical)
   
   # Save forecast
   
@@ -187,7 +190,7 @@ for(i in starting_index:nrow(sims)){
                                          endpoint = config$s3$forecasts_parquet$endpoint,
                                          local_directory = file.path(lake_directory, "forecasts/parquet"))
   
-  targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")),show_col_types = FALSE)
+  targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),show_col_types = FALSE)
   #targets_df <- targets_df[targets_df$depth != 0,]
   #targets_0depth <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),show_col_types = FALSE)
   #targets_df <- data.frame(rbind(targets_df, targets_0depth))
