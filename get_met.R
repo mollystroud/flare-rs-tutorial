@@ -76,18 +76,14 @@ get_temp_gefs <- function(site_id, start_time, bbox, lead_time = TRUE) {
     longitude = mean_lon,
     method = "nearest"
   )
-  if(lead_time == TRUE){
-    temp_r <- temp$assign_coords(
-      lead_hours = temp$lead_time$astype("timedelta64[h]")$astype("int"),
-      member_id  = temp$ensemble_member,
-      init_time = temp$init_time
-    )
-  } else {
-    temp_r <- temp$assign_coords(
-      lead_hours = lead_time,
-      member_id  = temp$ensemble_member,
-      init_time = temp$init_time
-    )
+  temp_r <- temp$assign_coords(
+    lead_hours = temp$lead_time$astype("timedelta64[h]")$astype("int"),
+    member_id  = temp$ensemble_member,
+    init_time = temp$init_time)
+  
+  if(lead_time != TRUE){
+    temp_r <- temp_r$sel(
+      lead_hours = temp_r$lead_hours <= 86400)
   }
   temp_r$to_dataframe()$reset_index()$to_csv('met_temp.csv', index = F)
   temp_df <- read_csv('met_temp.csv', show_col_types = FALSE)
@@ -124,6 +120,7 @@ get_temp_gefs <- function(site_id, start_time, bbox, lead_time = TRUE) {
   attr(temp_df$datetime, "tzone") <- "UTC"
   # call hourly function
   df <- get_hourly(temp_df, mean_lon, mean_lat)
+  df <- df[as.Date(df$datetime) == as.Date(start_time), ]
   return(df)
 }
 
@@ -156,16 +153,16 @@ get_stage_2 <- function(start_date, end_date, site, bbox){
 # stage 3 function
 get_stage_3 <- function(start_date, site, bbox){
   # get date sequence
-  dates <- seq(as.POSIXct(start_date),
-               as.POSIXct(as.Date(start_date) + (5)),
-               by = ("3 hours"))
+  dates <- seq(as.Date(start_date),
+               as.Date(as.Date(start_date) + (5)),
+               by = "1 day")
   # empty df
   stage3 <- data.frame()
   # for each date, get met data and bind together
-  for(time in dates){
-    message("Downloading stage 3 met data for ", (as.POSIXct(time)))
+  for(date in dates){
+    message("Downloading stage 3 met data for ", (as.Date(date)))
     metdata <- get_temp_gefs(site_id = site, 
-                             start_time = as.character(as.POSIXct(time)),
+                             start_time = as.character(as.Date(date)),
                              bbox = bbox,
                              lead_time = 0)
     stage3 <- rbind(stage3, metdata)
