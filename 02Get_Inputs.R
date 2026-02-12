@@ -106,6 +106,7 @@ sed_data <- get_sed_zone_data(era5_download,
                               depth = (max(values(bathy), na.rm = T) - min(values(bathy), na.rm = T)))
 print(sed_data)
 
+
 ################################################################################
 # 6. Create GLM file and config files
 ################################################################################
@@ -114,9 +115,8 @@ remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
 library(glmtools)
 
 var_list <- list(site, mylake_kw, site, points_df[[2]][1], points_df[[1]][1],
-                 dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z),
-                 (max(ha$depths) - min(ha$depths)), 
-                 sed_temp, sed_data$sed_amp, sed_data$doy,
+                 dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z), rev(max(ha$depths) - min(ha$depths)), 
+                 rep(sed_temp, sed_data$nzones[1]), sed_data$sed_amp, sed_data$doy,
                  sed_data$zone_heights, sed_data$nzones[1])
 var_name_list <- list("sim_name", "Kw", "lake_name", "latitude", "longitude",
                       "bsn_vals", "H", "A", "lake_depth",
@@ -131,10 +131,11 @@ yml <- yaml::read_yaml("configuration/analysis/configure_flare.yml")
 yml$location$site_id <- site
 yml$location$latitude <- points_df[[2]][1]
 yml$location$longitude <- points_df[[1]][1]
-yml$model_settings$modeled_depths <- seq(0, maxValue(bathy)[[1]])
-yml$default_init$lake_depth <- floor(maxValue(bathy)[[1]])
-yml$default_init$temp <- rep(5, times = length(seq(0, maxValue(bathy)[[1]])))
-yml$default_init$temp_depths <- seq(0, maxValue(bathy)[[1]])
+yml$default_init$lake_depth <- (max(ha$depths) - min(ha$depths))
+yml$default_init$temp <- rep(5, times = yml$default_init$lake_depth+1)
+yml$default_init$temp_depths <- seq(0, yml$default_init$lake_depth)
+yml$model_settings$modeled_depths <- seq(0, yml$default_init$lake_depth)
+
 yaml::write_yaml(yml, "configuration/analysis/configure_flare.yml")
 
 ################################################################################
