@@ -17,14 +17,14 @@ ls = stac("https://planetarycomputer.microsoft.com/api/stac/v1")
 ################################################################################
 # Function to create thermal stars object with specified dates and bbox
 ################################################################################
-get_lst <- function(bbox, start_date, end_date) {
+get_lst <- function(bbox, start_date, end_date, points) {
   # grab items within dates of interest
   items <- ls |>
     stac_search(collections = "landsat-c2-l2",
                 bbox = bbox,
                 datetime = paste(start_date, end_date, sep="/"),
                 limit = 1000) |>
-    ext_query("eo:cloud_cover" < 50) |> #filter for cloud cover
+    ext_query("eo:cloud_cover" < 30) |> #filter for cloud cover
     post_request() |>
     items_sign(sign_fn = sign_planetary_computer()) |>
     items_fetch()
@@ -55,12 +55,11 @@ get_lst <- function(bbox, start_date, end_date) {
     col <- stac_image_collection(items$features,
                                  asset_names = c("lwir11", "qa_pixel"),
                                  url_fun = identity)
-    #url_fun = function(url) paste0("/vsicurl/", url))  # helps GDAL access
     # make raster cube
     data <- raster_cube(image_collection = col, 
                         view = cube) |>
-      apply_pixel(expr = "((qa_pixel & (1<<7)) != 0) * lwir11", names = "thermal") |>
-      apply_pixel(expr = "(thermal * 0.00341802) - 124.15", names = "thermal_C")
+      apply_pixel(expr = "((qa_pixel & (1<<7)) != 0) * lwir11", names = "thermal") |> # if not water, set to 0
+      apply_pixel(expr = "(thermal * 0.00341802) - 124.15", names = "thermal_C") # convert to C
     # make stars obj
     ls_stars <- st_as_stars(data)
     ls_stars$thermal_C[ls_stars$thermal_C == -124.15] <- NA
@@ -75,7 +74,15 @@ get_lst <- function(bbox, start_date, end_date) {
       message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
       return( )
     } else {
-      return(clean_ls_stars)}
+      vals <- st_extract(clean_ls_stars["thermal_C"], points)
+      vals_df <- data.frame(vals)
+      if(all(is.na(vals_df$thermal_C))){
+        message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
+        return( )
+      } else {
+        return(clean_ls_stars)
+      }
+    }
   }
 }
 ################################################################################
@@ -84,6 +91,10 @@ get_lst <- function(bbox, start_date, end_date) {
 get_vals <- function(points, thermal_data){
   vals <- st_extract(thermal_data["thermal_C"], points)
   vals_df <- data.frame(vals)
+  if(all(is.na(vals_df$thermal_C))){
+    message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
+    return( )
+  }
   # if only one point, add back in time column and rearrange to format
   if(length(vals_df) < 3){
     vals_df$time <- st_dimensions(thermal_data)$time$values$start
