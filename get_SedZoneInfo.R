@@ -2,17 +2,15 @@
 # Code started by Molly Stroud on 1/29/26
 # Estimate temperature of sediment zone, peak doy, and amplitude
 ################################################################################
-message("Downloading code to quickly access ERA5 temperature data")
-devtools::install_github("FLARE-forecast/ropenmeteo", force = T, upgrade = "never")
-library(ropenmeteo)
-
-get_sed_zone_data <- function(era5, depth){
+get_sed_zone_data <- function(era5, depth, start_date){
+  sed_temp <- mean(era5$prediction)
   # clean up era5
   airtemp <- era5 |>
       dplyr::select(c(datetime, prediction)) |>
       dplyr::mutate(datetime = as.Date(datetime)) |>
       dplyr::group_by(datetime) |>
       dplyr::summarize(Temp = mean(prediction))
+  water_temp_init <- airtemp[airtemp$datetime == start_date,]$Temp
   airtemp$doy <- yday(airtemp$datetime)
     # get daily average over the years
   avg_airtemps <- airtemp |>
@@ -25,7 +23,8 @@ get_sed_zone_data <- function(era5, depth){
     z1 <- depth + 1
     sed_amp <- airtemp_amp
     sed_doy <- airtemp_peakdoy
-    return(data.frame(cbind(sed_amp, doy = sed_doy, nzones, zone_heights = z1)))
+    return(data.frame(cbind(sed_temp, sed_amp, doy = sed_doy, 
+                            nzones, zone_heights = z1, water_temp_init)))
   } 
   if(depth > 5 & depth <= 10) {
     nzones <- 2
@@ -42,9 +41,10 @@ get_sed_zone_data <- function(era5, depth){
     )
     mean_temp <- mean(avg_airtemps$smoothed, na.rm = T)
     sed_doy_z2 <- (sed_doy_z1 + airtemp_peakdoy) / 1.8
-    return(data.frame(cbind(sed_amp = c(sed_amp_z2, sed_amp_z1), 
+    return(data.frame(cbind(sed_temp, sed_amp = c(sed_amp_z2, sed_amp_z1), 
                             doy = c(sed_doy_z2, sed_doy_z1), 
-                            nzones, zone_heights = c(z2, z1))))
+                            nzones, zone_heights = c(z2, z1),
+                            water_temp_init)))
   } else {
     nzones <- 3
     z1 <- depth + 1
@@ -63,8 +63,8 @@ get_sed_zone_data <- function(era5, depth){
     mean_temp <- mean(avg_airtemps$smoothed, na.rm = T)
     sed_doy_z3 <- which(diff(avg_airtemps$smoothed > mean_temp) != 0)[-1]
     sed_doy_z2 <- (sed_doy_z1 + airtemp_peakdoy) / 1.8
-    return(data.frame(cbind(sed_amp = c(sed_amp_z3, sed_amp_z2, sed_amp_z1), 
+    return(data.frame(cbind(sed_temp, sed_amp = c(sed_amp_z3, sed_amp_z2, sed_amp_z1), 
                  doy = c(sed_doy_z3, sed_doy_z2, sed_doy_z1), 
-                 nzones, zone_heights = c(z3, z2, z1))))
+                 nzones, zone_heights = c(z3, z2, z1), water_temp_init)))
   }
 }
