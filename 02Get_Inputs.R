@@ -37,7 +37,7 @@ thermal_vals <- get_vals(points, thermaldata)
 output <- clean_data(thermal_vals)
 # save out targets
 # create directory for targets file
-dir.create(paste0('./targets/', site, '/'))
+dir.create(paste0('./targets/', site, '/'), recursive = T)
 write_csv(output, paste0('targets/', site, '/', site, '-targets-rs.csv'))
 
 
