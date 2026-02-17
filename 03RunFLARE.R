@@ -4,7 +4,7 @@
 ################################################################################
 # This script will run FLARE using the inputs created in 02Get_Inputs
 pacman::p_load('tidyverse', 'lubridate')
-#remotes::install_github("FLARE-forecast/FLAREr", force = T, upgrade = 'never', ref = 'v3.1-dev')
+remotes::install_github("FLARE-forecast/FLAREr", force = T, upgrade = 'never', ref = 'v3.1-dev')
 
 
 # This need to be set to run each experiment
