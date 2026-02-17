@@ -15,11 +15,13 @@ pacman::p_load(sf)
 # a four letter site name
 # EXAMPLE: SUGG for Lake Suggs
 site <- "wald"
+
 # specify bounding box
 bbox <- c(xmin = -71.3452,
           ymin = 42.4366,
           xmax = -71.3334,
           ymax = 42.4421)
+
 
 # pick representative point(s) of lake
 # for example, if your lake is a perfect circle, a good point would be the
@@ -31,9 +33,12 @@ points <- st_as_sf(x = points_df,
 
 
 # dates over which you want to run forecasts
+# for the tutorial, pick a date range of ~11-15 days
+# you may have to alter these dates depending on data availability
+# e.g. data may be sparse in England in the winter due to cloud cover
 # **START DATE MUST BE AFTER 2020-10-01**
 start_date <- "2025-10-01"
-end_date <- "2025-10-10"
-#end_date <- "2025-11-01"
+end_date <- "2025-10-12"
+
 
 

@@ -7,8 +7,6 @@ pacman::p_load('tidyverse', 'lubridate')
 #remotes::install_github("FLARE-forecast/FLAREr", force = T, upgrade = 'never', ref = 'v3.1-dev')
 
 
-
-
 # This need to be set to run each experiment
 run_name <- "run"
 config_flare_file <- "configure_flare.yml"
@@ -197,10 +195,10 @@ for(i in starting_index:nrow(sims)){
   
   
   targets_df <- obs_config |>
-    rename(variable = target_variable) |>
-    select(variable, obs_sd) |>
+    dplyr::rename(variable = target_variable) |>
+    dplyr::select(variable, obs_sd) |>
     right_join(targets_df, by = "variable") |>
-    mutate(up95 = observation + 1.96 * obs_sd,
+    dplyr::mutate(up95 = observation + 1.96 * obs_sd,
            low95 = observation - 1.96 * obs_sd,
            low95 = ifelse(variable != "temperature" & low95 < 0, 0, low95))
   
@@ -209,13 +207,13 @@ for(i in starting_index:nrow(sims)){
   FLAREr:::plotting_general(forecast_df, targets_df, file_name = paste0(tools::file_path_sans_ext(basename(saved_file)),".pdf") , plots_directory = config$file_path$plots_directory)
   
   #THESE SCORE WILL ONLY HAVE THE INSITU DATA RATHER THAN THE REMOTE SENSING DATA BECAUSE TARGET_DF IS THE INSITU DATA
-  generate_forecast_score_arrow(targets_df = targets_df,
-                                forecast_df = forecast_df,
-                                use_s3 = FALSE,
-                                bucket = NULL,
-                                endpoint = NULL,
-                                local_directory = file.path(lake_directory, "scores/parquet"),
-                                variable_types = c("state","parameter","diagnostic"))
+  #generate_forecast_score_arrow(targets_df = targets_df,
+                                #forecast_df = forecast_df,
+                                #use_s3 = FALSE,
+                                #bucket = NULL,
+                                #endpoint = NULL,
+                                #local_directory = file.path(lake_directory, "scores/parquet"),
+                                #variable_types = c("state","parameter","diagnostic"))
   
 }
 

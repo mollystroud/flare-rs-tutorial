@@ -17,8 +17,7 @@ source("01LakeInfo.R")
 ################################################################################
 # 1. Download remote sensing data
 # Warning: if you are trying to download data over a long period of time (>>1yr) 
-# or over a large lake, this will take a long time. Consider looping through
-# chunks of time in this section and merging the dfs together at the end
+# or over a large lake, this will take a long time.
 ################################################################################
 source("get_LST.R")
 thermaldata <- get_lst(bbox, 
@@ -56,14 +55,15 @@ get_stage_3(start_date, site, bbox)
 
 ################################################################################
 # 3. Get bathymetric data (OPTIONAL!)
-# If you already have existing bathymetry, skip to get_ha function and input your
-# bathymetry raster
+# If you already have existing bathymetry, skip to get_ha function and input
+# your bathymetry raster
 ################################################################################
 # get bathymetry from GLOBathy
 source("get_bathy.R")
 bathy <- find_matches(bbox)
-plot(bathy) # check this is the correct lake
+plot(bathy) # visually check this is the correct lake
 ha <- get_ha(bathy, points)
+
 
 ################################################################################
 # 4. Get Kw factor (light extinction)
@@ -84,7 +84,7 @@ mylake_kw <- get_kw_US(bbox)
 # mylake_kw <- 1.7/1
 
 # If your lake is somewhere between turbid and clear (Secchi > 1, < 5):
-mylake_kw <- 1.7/3
+#ylake_kw <- 1.7/3
 
 # If your lake is very clear (Secchi > 5):
 # mylake_kw <-  1.7/5
@@ -102,11 +102,10 @@ era5_download <- get_historical_weather(latitude = points_df$lat[1],
                                         start_date = Sys.Date() - 2000, # get a long enough date range
                                         end_date = Sys.Date(),
                                         variables = c("temperature_2m"))
-# if the lake is < 5 m deep, the peak doy and amplitude are also comparable to air temp
+
 sed_data <- get_sed_zone_data(era5_download, 
                               depth = (max(values(bathy), na.rm = T) - min(values(bathy), na.rm = T)),
                               start_date)
-print(sed_data)
 
 
 ################################################################################
@@ -139,6 +138,7 @@ yml$default_init$temp_depths <- seq(0, yml$default_init$lake_depth)
 yml$model_settings$modeled_depths <- seq(0, yml$default_init$lake_depth)
 
 yaml::write_yaml(yml, "configuration/analysis/configure_flare.yml")
+
 
 ################################################################################
 # Now, open 03FLARE to run FLARE
