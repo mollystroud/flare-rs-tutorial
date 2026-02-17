@@ -112,6 +112,7 @@ sed_data <- get_sed_zone_data(era5_download,
 # 6. Create GLM file and config files
 ################################################################################
 source("edit_nml_functions.R")
+remotes::install_github('rqthomas/GLM3r')
 remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
 library(glmtools)
 
