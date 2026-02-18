@@ -10,7 +10,7 @@ remotes::install_github("FLARE-forecast/FLAREr", force = T, upgrade = 'never', r
 # This need to be set to run each experiment
 run_name <- "run"
 config_flare_file <- "configure_flare.yml"
-starting_index <- 1 #260
+starting_index <- 1 
 experiments <- c("with_rs")
 
 
@@ -122,9 +122,6 @@ for(i in starting_index:nrow(sims)){
   pars_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$par_config_file), col_types = readr::cols())
   obs_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$obs_config_file), col_types = readr::cols())
   states_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$states_config_file), col_types = readr::cols())
-  
-  # Inflows
-  #source(file.path(lake_directory, "workflows", config_set_name, "make_flow_drivers.R"))
   met_start_datetime <- lubridate::as_datetime(config$run_config$start_datetime)
   met_forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
   
@@ -132,12 +129,10 @@ for(i in starting_index:nrow(sims)){
   
   
   #Create observation matrix
-  #NOTE THAT THE TARGETS DATA ARE THE REMOTE SENSING VERSION
   obs <- FLAREr:::create_obs_matrix(cleaned_observations_file_long = file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),
                                     obs_config = obs_config,
                                     config)
   
-  #NOTE THAT THE TARGETS DATA ARE THE REMOTE SENSING VERSION
   obs_non_vertical <- FLAREr:::create_obs_non_vertical(cleaned_observations_file_long = file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),
                                                        obs_config,
                                                        start_datetime = config$run_config$start_datetime,
@@ -158,7 +153,7 @@ for(i in starting_index:nrow(sims)){
                                                config,
                                                obs_non_vertical = obs_non_vertical)
   
-  
+  # create forecast!!!!
   da_forecast_output <- FLAREr:::run_da_forecast(states_init = init$states,
                                                  pars_init = init$pars,
                                                  aux_states_init = init$aux_states_init,
@@ -177,7 +172,6 @@ for(i in starting_index:nrow(sims)){
                                                  states_non_vertical = states_non_vertical)
   
   # Save forecast
-  
   saved_file <- FLAREr:::write_restart(da_forecast_output = da_forecast_output,
                                        forecast_output_directory = config$file_path$restart_directory,
                                        use_short_filename = TRUE)
@@ -189,10 +183,6 @@ for(i in starting_index:nrow(sims)){
                                          local_directory = file.path(lake_directory, "forecasts/parquet"))
   
   targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),show_col_types = FALSE)
-  #targets_df <- targets_df[targets_df$depth != 0,]
-  #targets_0depth <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")),show_col_types = FALSE)
-  #targets_df <- data.frame(rbind(targets_df, targets_0depth))
-  
   
   targets_df <- obs_config |>
     dplyr::rename(variable = target_variable) |>
@@ -202,18 +192,6 @@ for(i in starting_index:nrow(sims)){
            low95 = observation - 1.96 * obs_sd,
            low95 = ifelse(variable != "temperature" & low95 < 0, 0, low95))
   
-  
-  #THESE PLOTS WILL ONLY HAVE THE INSITU DATA RATHER THAN THE REMOTE SENSING DATA BECAUSE TARGET_DF IS THE INSITU DATA
   FLAREr:::plotting_general(forecast_df, targets_df, file_name = paste0(tools::file_path_sans_ext(basename(saved_file)),".pdf") , plots_directory = config$file_path$plots_directory)
-  
-  #THESE SCORE WILL ONLY HAVE THE INSITU DATA RATHER THAN THE REMOTE SENSING DATA BECAUSE TARGET_DF IS THE INSITU DATA
-  #generate_forecast_score_arrow(targets_df = targets_df,
-                                #forecast_df = forecast_df,
-                                #use_s3 = FALSE,
-                                #bucket = NULL,
-                                #endpoint = NULL,
-                                #local_directory = file.path(lake_directory, "scores/parquet"),
-                                #variable_types = c("state","parameter","diagnostic"))
-  
 }
 

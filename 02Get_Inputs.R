@@ -44,7 +44,7 @@ write_csv(output, paste0('targets/', site, '/', site, '-targets-rs.csv'))
 ################################################################################
 # 2. Download meteorological data
 # Warning: this may take a while depending on length of your date range
-# Warning: python must be installed to run this 
+# Warning: Python must be installed to run this 
 ################################################################################
 source("get_met.R")
 # download stage 2 
@@ -54,7 +54,7 @@ get_stage_3(start_date, site, bbox)
 
 
 ################################################################################
-# 3. Get bathymetric data (OPTIONAL!)
+# 3. Get bathymetric data
 # If you already have existing bathymetry, skip to get_ha function and input
 # your bathymetry raster
 ################################################################################
@@ -116,6 +116,8 @@ remotes::install_github('rqthomas/GLM3r')
 remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
 library(glmtools)
 
+
+# create list of variable values & names for input to nml
 var_list <- list(site, mylake_kw, site, points_df[[2]][1], points_df[[1]][1],
                  dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z), rev(max(ha$depths) - min(ha$depths)), 
                  sed_data$sed_temp, sed_data$sed_amp, sed_data$doy,
@@ -124,11 +126,11 @@ var_name_list <- list("sim_name", "Kw", "lake_name", "latitude", "longitude",
                       "bsn_vals", "H", "A", "lake_depth",
                       "sed_temp_mean", "sed_temp_amplitude", "sed_temp_peak_doy",
                       "zone_heights", "n_zones")
-# create list of variable values & names for input to nml
+# update nml
 update_nml(var_list, var_name_list, 
            working_directory = 'configuration/analysis', nml = 'glm3.nml')
 
-# update configure_flare
+# update configure_flare yml
 yml <- yaml::read_yaml("configuration/analysis/configure_flare.yml")
 yml$location$site_id <- site
 yml$location$latitude <- points_df[[2]][1]

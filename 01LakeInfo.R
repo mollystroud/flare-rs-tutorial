@@ -22,7 +22,6 @@ bbox <- c(xmin = -71.3452,
           xmax = -71.3334,
           ymax = 42.4421)
 
-
 # pick representative point(s) of lake
 # for example, if your lake is a perfect circle, a good point would be the
 # middle of the circle
