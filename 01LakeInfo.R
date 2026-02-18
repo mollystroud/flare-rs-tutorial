@@ -4,7 +4,7 @@
 ################################################################################
 pacman::p_load(sf)
 # Input below:
-# 1. Your desired bounding box coordinates (and UTM zone)
+# 1. Your desired bounding box coordinates
 # 2. The coordinates of a representative point(s) over your lake or reservoir of interest
 # 3. Your start and end dates in the following format: YYYY-DD-MM
 
