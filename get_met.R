@@ -3,22 +3,22 @@
 # Download data from dynamical.org and put into correct formatting for FLARE
 # https://dynamical.org/catalog/noaa-gefs-forecast-35-day/
 ################################################################################
-pacman::p_load('tidyverse', 'zarr', 'Rarr', 'sf', 'reticulate', 'arrow')
-
+#pacman::p_load('tidyverse', 'sf', 'reticulate', 'arrow') #'zarr', 'BiocManager',
+#BiocManager::install('Rarr', update = F, force = T)
 ################################################################################
 # Use Python env
 ################################################################################
 message("Setting up Python environment. Python must be downloaded for this to run.")
 venv_path <- file.path(getwd(), ".venv")
-py_install("dask")
+#py_config()
 if (!dir.exists(venv_path)) {
   virtualenv_create(venv_path)
   virtualenv_install(
     venv_path,
     packages = c(
-      "dask",
-      "xarray",
-      "zarr",
+      "dask==2025.1.0",
+      "xarray==2025.1.0",#[complete]>=2025.1.2",
+      "zarr==3.0.8",#>=3.0.8",
       "certifi",
       "numpy",
       "fsspec",
@@ -41,13 +41,12 @@ os$environ["SSL_CERT_FILE"] <- certifi$where()
 message("Opening data from data.dynamical.org")
 # open the zarr from dynamical.org
 ds <- xr$open_zarr(
-  "https://data.dynamical.org/noaa/gefs/forecast-35-day/latest.zarr?email=optional@email.com",
+  "https://data.dynamical.org/noaa/gefs/forecast-35-day/latest.zarr",
   #"https://data.dynamical.org/noaa/gefs/analysis/latest.zarr",
   consolidated = TRUE,
   decode_timedelta = TRUE,
   chunks = "auto"
 )
-#py_to_r(ds$init_time$values)
 
 source("to_hourly.R")
 # variables of interest

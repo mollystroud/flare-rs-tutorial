@@ -1,7 +1,7 @@
 ################################################################################
 # GLOBathy script
 ################################################################################
-pacman::p_load(tidyverse, sf, raster, terra, dplyr, elevatr, marmap, rLakeAnalyzer)
+#pacman::p_load(tidyverse, sf, raster, terra, dplyr, elevatr, marmap, rLakeAnalyzer)
 ################################################################################
 # this code creates an index file for GLOBathy, so users can easily find the
 # bathymetry file corresponding to their lake of interest

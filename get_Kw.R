@@ -4,7 +4,7 @@
 # Download dataset here: https://doi.org/10.6073/pasta/128700feb3bbc3ffe5800e7b232bd81f
 # And lake IDs here: https://doi.org/10.6073/pasta/e5c2fb8d77467d3f03de4667ac2173ca
 ################################################################################
-pacman::p_load(tidyverse)
+#pacman::p_load(tidyverse)
 get_kw_US <- function(bbox){
   message("Downloading LAGOS Lake Information")
   lakeinfo <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/854/1/007ca4f5ec02bb5809fc661dcfa7a903")

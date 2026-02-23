@@ -1,9 +1,7 @@
 ################################################################################
 # Code started by Molly Stroud on 11/18/25
 ################################################################################
-# load in packages
-pacman::p_load('rstac', 'terra', 'stars', 'ggplot2', 'tidyterra', 'viridis', 
-       'gdalcubes', 'tmap', 'dplyr', 'tidyverse', 'sf')
+
 ################################################################################
 ## the below code is designed to pull landsat thermal imagery over a specified 
 # area and estimate temperature over the reservoir

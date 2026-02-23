@@ -2,7 +2,6 @@
 # Author: Molly Stroud
 # Started 1/29/26
 ################################################################################
-pacman::p_load(sf)
 # Input below:
 # 1. Your desired bounding box coordinates
 # 2. The coordinates of a representative point(s) over your lake or reservoir of interest
