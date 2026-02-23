@@ -18,7 +18,7 @@ if (!dir.exists(venv_path)) {
     packages = c(
       "dask==2025.1.0",
       "xarray==2025.1.0",#[complete]>=2025.1.2",
-      "zarr==3.0.8",#>=3.0.8",
+      "zarr==3.1.5",#>=3.0.8",
       "certifi",
       "numpy",
       "fsspec",
@@ -27,8 +27,16 @@ if (!dir.exists(venv_path)) {
     )
   )
 }
-use_virtualenv(venv_path, required = TRUE)
 
+# Attempt to use virtualenv, catch error if it fails
+tryCatch(
+  {
+    use_virtualenv(venv_path, required = TRUE)
+  },
+  error = function(e) {
+    message("Failed to activate virtualenv. Go to your RStudio Tools -> Global Options -> Python and uncheck the 'Automatically activate...' box, then try running again.")
+  }
+)
 # python libraries
 certifi <- import("certifi")
 os <- import("os")
@@ -44,7 +52,7 @@ ds <- xr$open_zarr(
   "https://data.dynamical.org/noaa/gefs/forecast-35-day/latest.zarr",
   #"https://data.dynamical.org/noaa/gefs/analysis/latest.zarr",
   consolidated = TRUE,
-  decode_timedelta = TRUE,
+  decode_timedelta = FALSE,
   chunks = "auto"
 )
 
@@ -83,9 +91,16 @@ get_temp_gefs <- function(site_id, start_time, bbox, lead_time = TRUE) {
     temp_r <- temp_r$sel(
       lead_hours = temp_r$lead_hours <= 86400)
   }
-  temp_r$to_dataframe()$reset_index()$to_csv('met_temp.csv', index = F)
-  temp_df <- read_csv('met_temp.csv', show_col_types = FALSE)
-  file.remove("met_temp.csv")
+  
+  df <- temp_r$to_dataframe()
+  # Only reset index if it’s not a plain RangeIndex
+  if (inherits(df, "data.frame")) {
+    temp_df <- df
+  } else {
+    df$reset_index()$to_csv('met_temp.csv', index = F)
+    temp_df <- read_csv('met_temp.csv', show_col_types = FALSE)
+    file.remove("met_temp.csv")
+  }
   temp_df <- temp_df |>
     dplyr::select(-c(expected_forecast_length,
               ingested_forecast_length,
