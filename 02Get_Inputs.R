@@ -11,15 +11,14 @@
 # 5. Eestimate sediment zone info
 # 6. Create GLM file
 
-# get lake specifications
-source("01LakeInfo.R")
+# get scripts needed to run this code
+walk(list.files(file.path(here::here(), "R"), full.names = TRUE), source)
 
 ################################################################################
 # 1. Download remote sensing data
 # Warning: if you are trying to download data over a long period of time (>>1yr) 
 # or over a large lake, this will take a long time.
 ################################################################################
-source("get_LST.R")
 thermaldata <- get_lst(bbox, 
         paste0(start_date, "T00:00:00Z"), 
         paste0(end_date, "T00:00:00Z"),
@@ -46,7 +45,6 @@ write_csv(output, paste0('targets/', site, '/', site, '-targets-rs.csv'))
 # Warning: this may take a while depending on length of your date range
 # Warning: Python must be installed to run this 
 ################################################################################
-source("get_met.R")
 # download stage 2 
 get_stage_2(start_date, end_date, site, bbox)
 # download stage 3
@@ -59,7 +57,6 @@ get_stage_3(start_date, site, bbox)
 # your bathymetry raster
 ################################################################################
 # get bathymetry from GLOBathy
-source("get_bathy.R")
 bathy <- find_matches(bbox)
 plot(bathy) # visually check this is the correct lake
 ha <- get_ha(bathy, points)
@@ -70,7 +67,6 @@ ha <- get_ha(bathy, points)
 # If your lake of interest is in the US, use the function get_kw_US
 # If your lake of interest is outside the US, use the function get_kw_global
 ################################################################################
-source("get_Kw.R")
 # Search for lake in LAGOS US database
 mylake_kw <- get_kw_US(bbox)
 
@@ -93,9 +89,6 @@ mylake_kw <- get_kw_US(bbox)
 ################################################################################
 # 5. Estimate sediment zone info
 ################################################################################
-source("get_SedZoneInfo.R")
-devtools::install_github("FLARE-forecast/ropenmeteo", force = T, upgrade = "never")
-library(ropenmeteo)
 # first get air temperature data over a few years
 era5_download <- get_historical_weather(latitude = points_df$lat[1],
                                         longitude = points_df$lon[1],
@@ -111,8 +104,6 @@ sed_data <- get_sed_zone_data(era5_download,
 ################################################################################
 # 6. Create GLM file and config files
 ################################################################################
-source("edit_nml_functions.R")
-
 # create list of variable values & names for input to nml
 var_list <- list(site, mylake_kw, site, points_df[[2]][1], points_df[[1]][1],
                  dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z), rev(max(ha$depths) - min(ha$depths)), 

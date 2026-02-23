@@ -48,7 +48,6 @@ ds <- xr$open_zarr(
   chunks = "auto"
 )
 
-source("to_hourly.R")
 # variables of interest
 vars <- c(
   'temperature_2m',
