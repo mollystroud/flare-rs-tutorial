@@ -30,6 +30,14 @@ if (!dir.exists(venv_path)) {
 
 # Attempt to use virtualenv, catch error if it fails
 use_virtualenv(venv_path, required = TRUE)
+tryCatch({
+  use_virtualenv(venv_path, required = TRUE)
+}, warning = function(w) {
+  use_virtualenv(venv_path, required = TRUE)
+}, error = function(e){
+  message("ERROR! Go to your RStudio Tools -> Global Options -> Python and uncheck the 'Automatically activate...' box, then try running again.")
+}
+  )
 ### IF THIS FAILS: Go to your RStudio Tools -> Global Options -> Python and uncheck the 'Automatically activate...' box, then try running again."
 
 # python libraries
