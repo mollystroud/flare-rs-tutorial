@@ -6,12 +6,14 @@
 # This script will:
 # 1. Download remote sensing data
 # 2. Download meteorological data
-# 3. Grab bathymetry data (OPTIIONAL)
+# 3. Grab bathymetry data
 # 4. Grab Kw factor
 # 5. Eestimate sediment zone info
-# 6. Create GLM file
+# 6. Create GLM and config yml file
 
 # get scripts needed to run this code
+source("R/install.R")
+source("01LakeInfo.R")
 walk(list.files(file.path(here::here(), "R"), full.names = TRUE), source)
 
 ################################################################################

@@ -9,6 +9,7 @@
 # Use Python env
 ################################################################################
 message("Setting up Python environment. Python must be downloaded for this to run.")
+#virtualenv_remove(venv_path)
 venv_path <- file.path(getwd(), ".venv")
 #py_config()
 if (!dir.exists(venv_path)) {
@@ -17,11 +18,10 @@ if (!dir.exists(venv_path)) {
     venv_path,
     packages = c(
       "dask==2025.1.0",
-      "xarray==2025.1.0",#[complete]>=2025.1.2",
-      "zarr==3.1.5",#>=3.0.8",
+      "xarray[complete]==2026.1.0",#[complete]>=2025.1.2",
+      "zarr==3.0.8",#>=3.0.8",
       "certifi",
       "numpy",
-      "fsspec",
       "requests",
       "aiohttp"
     )
@@ -29,14 +29,9 @@ if (!dir.exists(venv_path)) {
 }
 
 # Attempt to use virtualenv, catch error if it fails
-tryCatch(
-  {
-    use_virtualenv(venv_path, required = TRUE)
-  },
-  error = function(e) {
-    message("Failed to activate virtualenv. Go to your RStudio Tools -> Global Options -> Python and uncheck the 'Automatically activate...' box, then try running again.")
-  }
-)
+use_virtualenv(venv_path, required = TRUE)
+### IF THIS FAILS: Go to your RStudio Tools -> Global Options -> Python and uncheck the 'Automatically activate...' box, then try running again."
+
 # python libraries
 certifi <- import("certifi")
 os <- import("os")
@@ -49,7 +44,7 @@ os$environ["SSL_CERT_FILE"] <- certifi$where()
 message("Opening data from data.dynamical.org")
 # open the zarr from dynamical.org
 ds <- xr$open_zarr(
-  "https://data.dynamical.org/noaa/gefs/forecast-35-day/latest.zarr",
+  "https://data.dynamical.org/noaa/gefs/forecast-35-day/latest.zarr?email=optional@email.com",
   #"https://data.dynamical.org/noaa/gefs/analysis/latest.zarr",
   consolidated = TRUE,
   decode_timedelta = FALSE,
