@@ -23,8 +23,8 @@
 message("Downloading GLOBathy index file")
 index <- read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/GLOBathy/GLOBathy_index.csv")
 find_matches <- function(bbox){
-  mean_x <- (bbox["xmin"] + bbox["xmax"]) / 2
-  mean_y <- (bbox["ymin"] + bbox["ymax"]) / 2
+  mean_x <- (bbox["left"] + bbox["right"]) / 2
+  mean_y <- (bbox["bottom"] + bbox["top"]) / 2
   match <- index |>
     filter(xmin < mean_x & xmax > mean_x) |>
     filter(ymin < mean_y & ymax > mean_y)

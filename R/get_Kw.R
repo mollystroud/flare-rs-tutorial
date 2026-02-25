@@ -36,8 +36,8 @@ get_kw_global <- function(bbox){
   message("Downloading Global Lake Information")
   lakeinfo <- read_csv("https://raw.githubusercontent.com/roohollahnoori/AWQDFGL/refs/heads/main/Unique_Lake_Name.csv")
   mylake <- lakeinfo |>
-    filter(bbox["xmin"] < Longitude & bbox["xmax"] > Longitude) |>
-    filter(bbox["ymin"] < Latitude & bbox["ymax"] > Latitude)
+    filter(bbox["left"] < Longitude & bbox["right"] > Longitude) |>
+    filter(bbox["bottom"] < Latitude & bbox["top"] > Latitude)
   if(dim(mylake)[1] != 0){
     print(mylake)
     q <- readline("Is this the correct lake? (Y/N):  ")

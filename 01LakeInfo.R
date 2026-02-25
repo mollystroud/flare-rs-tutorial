@@ -16,10 +16,10 @@
 site <- "wald"
 
 # specify bounding box
-bbox <- c(xmin = -71.3452,
-          ymin = 42.4366,
-          xmax = -71.3334,
-          ymax = 42.4421)
+bbox <- c(left = -71.3452,
+          bottom = 42.4366,
+          right = -71.3334,
+          top = 42.4421)
 
 # pick representative point(s) of lake
 # for example, if your lake is a perfect circle, a good point would be the
