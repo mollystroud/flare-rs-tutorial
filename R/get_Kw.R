@@ -12,23 +12,24 @@ get_kw_US <- function(bbox){
     #filter(str_detect(lake_namegnis, lakename))
     filter(bbox["xmin"] < lake_lon_decdeg & bbox["xmax"] > lake_lon_decdeg) |>
     filter(bbox["ymin"] < lake_lat_decdeg & bbox["ymax"] > lake_lat_decdeg)
-  if(dim(mylake)[1] != 0){
+  if(nrow(mylake) == 1){
     print(mylake)
-    q <- readline("Is this the correct lake? (Y/N):  ")
+  } else if (nrow(mylake) > 1){
+    print(mylake)
+    q <- readline("Which is the correct lake? Enter line number:   ")
+    mylake <- mylake[q,]
   } else {
     message("Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")
     }
-  if(tolower(q) %in% c("Y", "y", "Yes", "yes")){
-    message("Downloading LAGOS Secchi information. This may take a minute.")
+    message("Downloading LAGOS Secchi information.")
     #original lagos file (over 7GB)
    #### lagos_qual <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/1427/1/3cb4f20440cbd7b8e828e4068d2ab734")
-    lagos_qual <- read_csv("LAGOS_US_LANDSAT_Predictions_AVERAGED.csv")
+    lagos_qual <- read_csv("LAGOS_US_LANDSAT_Predictions_AVERAGED.csv", show_col_types = F)
     mylake_secchi <- lagos_qual |>
       filter(lagoslakeid == mylake$lagoslakeid)
     message("Mean secchi for this lake is ", mylake_secchi$mean_secchi)
     Kw <- 1.7 / mylake_secchi$mean_secchi
     return(Kw)
-  } else {message("Your lake may not exist in the LAGOS database. You may also search the database by lake name, NHDID, and more.")}
 }
 
 get_kw_global <- function(bbox){
