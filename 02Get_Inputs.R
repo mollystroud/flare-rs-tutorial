@@ -41,6 +41,19 @@ output <- clean_data(thermal_vals)
 dir.create(paste0('./targets/', site, '/'), recursive = T)
 write_csv(output, paste0('targets/', site, '/', site, '-targets-rs.csv'))
 
+# now download SWOT data for changes in lake depth 
+swot_data <- get_swot(bbox, start_date, end_date, site)
+
+# see what it looks like!
+ggplot() +
+  geom_line(data = swot_data, aes(x = datetime, y = observation)) +
+  theme_classic() +
+  labs(x = element_blank(), y = element_blank())
+
+targets <- read_csv(paste0('targets/', site, '/', site, '-targets-rs.csv'))
+targets <- rbind(swot_data, targets)
+write_csv(targets, paste0('targets/', site, '/', site, '-targets-rs.csv'))
+
 
 ################################################################################
 # 2. Download meteorological data
