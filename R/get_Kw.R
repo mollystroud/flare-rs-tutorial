@@ -10,8 +10,8 @@ get_kw_US <- function(bbox){
   lakeinfo <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/854/1/007ca4f5ec02bb5809fc661dcfa7a903")
   mylake <- lakeinfo |>
     #filter(str_detect(lake_namegnis, lakename))
-    filter(bbox["xmin"] < lake_lon_decdeg & bbox["xmax"] > lake_lon_decdeg) |>
-    filter(bbox["ymin"] < lake_lat_decdeg & bbox["ymax"] > lake_lat_decdeg)
+    filter(bbox["left"] < lake_lon_decdeg & bbox["right"] > lake_lon_decdeg) |>
+    filter(bbox["bottom"] < lake_lat_decdeg & bbox["top"] > lake_lat_decdeg)
   if(nrow(mylake) == 1){
     print(mylake)
   } else if (nrow(mylake) > 1){
