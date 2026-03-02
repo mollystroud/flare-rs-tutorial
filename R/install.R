@@ -12,4 +12,5 @@ devtools::install_github("FLARE-forecast/ropenmeteo", force = T, upgrade = "neve
 library(ropenmeteo)
 pacman::p_load('rstac', 'terra', 'stars', 'ggplot2', 'tidyterra', 'viridis', 'yaml', 
                'gdalcubes', 'tmap', 'dplyr', 'tidyverse', 'sf', 'reticulate',
-               'arrow', 'raster', 'terra', 'elevatr', 'marmap', 'rLakeAnalyzer')
+               'arrow', 'raster', 'terra', 'elevatr', 'marmap', 'rLakeAnalyzer',
+               'httr', 'jsonlite', 'readr')
