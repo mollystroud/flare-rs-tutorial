@@ -41,7 +41,7 @@ get_swot <- function(bbox, start_date, end_date, site){
     rename(observation = wse) |>
     mutate(datetime = paste0(as.Date(datetime), "T00:00:00Z")) |>
     mutate(site_id = site) |>
-    mutate(depth = 0) |>
+    mutate(depth = NA) |>
     mutate(variable = "depth")
   return(data)
 }
