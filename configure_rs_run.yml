@@ -2,6 +2,7 @@ start_datetime: 2026-07-01 00:00:00
 forecast_start_datetime: 2026-07-10  00:00:00
 forecast_horizon: 5
 lakes:
+  # four letter abbreviation of lake name
   wacc:
   # specify bounding box
     bbox:
