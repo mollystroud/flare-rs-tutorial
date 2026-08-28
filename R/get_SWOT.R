@@ -10,7 +10,7 @@ get_swot <- function(bbox, start_date, end_date, site){
   base_url <- "https://soto.podaac.earthdatacloud.nasa.gov/hydrocron/v1/timeseries"
   # first get lake ID
   message("Downloading SWOT Prior Lake Database IDs")
-  lakeIDs <- read_csv("SWOT_PLD_IDs.csv")
+  lakeIDs <- read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/GLOBathy/SWOT_PLD_IDs.csv")
   mylake <- lakeIDs |>
     filter(bbox["left"] < lon & bbox["right"] > lon) |>
     filter(bbox["bottom"] < lat & bbox["top"] > lat)
