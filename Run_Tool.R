@@ -1,7 +1,12 @@
 ################################################################################
+# FLARE User Tool Tutorial
 # Author: Molly Stroud
 # Started 1/20/26
+# Last updated: 8/28/26
 ################################################################################
+
+
+###### OVERVIEW ################################################################
 
 # This script will:
 # 1. Download remote sensing data
@@ -10,12 +15,15 @@
 # 4. Grab Kw factor
 # 5. Estimate sediment zone info
 # 6. Create GLM and config yml file
+
+################################################################################
+
 pacman::p_load('rstac', 'terra', 'stars',
                'ggplot2', 'tidyterra', 'viridis',
                'yaml','gdalcubes', 'tmap', 'dplyr',
                'tidyverse', 'sf','arrow', 'raster',
-               'terra', 'elevatr', 'marmap',
-               'rLakeAnalyzer','httr', 'jsonlite', 'readr')
+               'elevatr', 'marmap', 'rLakeAnalyzer',
+               'httr', 'jsonlite', 'readr')
 
 library(ropenmeteo)
 library(GLM3r)
@@ -91,13 +99,13 @@ dir.create(paste0('./targets/', site_id, '/'), recursive = T)
 write_csv(output, paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
 
 ## now download SWOT data for changes in lake depth
-#swot_data <- get_swot(bbox, start_date, end_date, site_id)
-#if(nrow(swot_data) != 0){
-#  swot_data$datetime <- as.Date(swot_data$datetime)
-#}
-#targets <- read_csv(paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
-#targets <- rbind(swot_data, targets)
-#write_csv(targets, paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
+swot_data <- get_swot(bbox, start_date, end_date, site_id)
+if(nrow(swot_data) != 0){
+ swot_data$datetime <- as.Date(swot_data$datetime)
+}
+targets <- read_csv(paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
+targets <- rbind(swot_data, targets)
+write_csv(targets, paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
 
 
 ################################################################################
