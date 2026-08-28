@@ -1,7 +1,3 @@
-------------------------------------------------------------------------
-
-editor_options: markdown: wrap: 72 ---
-
 # flare-rs-tutorial
 
 Repo to test running FLARE user tool for CEF 🛰️
@@ -14,7 +10,7 @@ This code works best when run in a container. Below are the instructions for a u
 
 1.  If you do not already have Docker installed, download and install Docker [here](https://docs.docker.com/desktop/setup/install/mac-install/).
 
-2.  Once installed, open Terminal on your computer and run the following command:
+2.  Once installed, open both Docker and Terminal on your computer and run the following command in your Terminal:
 
 ```         
 docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
