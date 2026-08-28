@@ -1,20 +1,47 @@
 # flare-rs-tutorial
 Repo to test running FLARE user tool for CEF 🛰️
 
+OVERVIEW
+
+This repository contains code to run the Forecasting Lake And Reservoir Ecosystems 
+(FLARE) user tool, in which a user may input a lake and time range of interest and
+create a temperature forecast for that lake.
+
+
 To run this code:
 
-✦ Clone the repo
+This code works best when run in a container. Below are the instructions for a
+user to run this code in a Docker container.
 
-✦ Input your desired lake info and date range in 01LakeInfo (or use one of the pre-selected lakes)
+1. If you do not already have Docker installed, download and install Docker 
+[here](https://docs.docker.com/desktop/setup/install/mac-install/).
 
-✦ Run 02GetInputs to get necessary inputs (remote sensing data, met data, etc) for FLARE
+2. Once installed, open Terminal on your computer and run the following command:
 
-✦ Run 03RunFLARE to get your forecasts, which you can look at in /plots.
+```
+docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
+```
+
+3. Open your internet browser of choice and navigate to `http://localhost:8787/`.
+
+4. Log in with the username `rstudio` and password `yourpassword`. After doing this,
+the Docker may take a few minutes to start.
+
+5. Open this GitHub repository in the Docker. 
+
+6. Navigate to the terminal in the Docker RStudio session (found near the bottom left of the screen).
+Type in the following commands:
+
+```
+sudo apt-get update
+sudo apt-get install -y python3 python3-pip python3-venv
+```
+
+7. Now, you are ready to begin setting up the tool! Open Tool_Setup.qmd and follow
+the instructions.
 
 
-Note: The GLM binary used in this repo (/binary/macos/glm) is for MacOS users only. 
-For Windows or Linux users, please replace this binary with the appropriate GLM file 
-(see https://github.com/AquaticEcoDynamics/glm-aed).
+
 
 
 ## To do list
