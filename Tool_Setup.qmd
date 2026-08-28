@@ -14,12 +14,11 @@ After finishing this setup and confirming data availability, the user may go to 
 
 ### Install packages
 
-If you are running this in the provided Docker (recommended), many packages are already installed, including ADD PACKAGES. If you are running this outside of the contained, you will need to install these packages.
+If you are running this in the provided Docker (recommended), many packages are already installed, including GLM3r and FLAREr. If you are running this outside of the contained, you will need to install these packages.
 
 ```{r}
 # remotes::install_github('rqthomas/GLM3r')
 # remotes::install_github("FLARE-forecast/FLAREr")
-
 install.packages('pacman')
 pacman::p_load('rstac', 'terra', 'stars',
                'ggplot2', 'tidyterra', 'viridis',
@@ -123,4 +122,122 @@ if(nrow(swot_data) != 0){
 targets <- read_csv(paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
 targets <- rbind(swot_data, targets)
 write_csv(targets, paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
+
+```
+
+### Download local meteorology
+
+This downloads stage 2 and stage 3 meteorology data from dynamical.org. Depending on your date range, this may take a while. Python must be installed to run this.
+
+```{r}
+start_date <- as_date(inputs$start_datetime)
+forecast_start_date <- as_date(inputs$forecast_start_datetime)
+forecast_end_date <- as_date(inputs$start_datetime) + days(inputs$forecast_horizon)
+
+# stage 2
+.run_get_met_py(
+  stage = "stage2",
+  site_id = site_id,
+  bbox = bbox,
+  reference_datetime = forecast_start_date
+)
+
+# stage 3
+.run_get_met_py(
+  stage = "stage3",
+  site_id = site_id,
+  bbox = bbox,
+  reference_datetime = start_date,
+  end_date = forecast_start_date
+)
+```
+
+### Get bathymetry
+
+This downloads bathymetric data from the GLOBathy dataset. Confirm that the bathymetry is for the correct lake by looking at the output plot. If the bathymetry looks too deep, set max_depth_allowed in the .yml. If the user has their own bathymetry raster or existing H/A relationship, they may use this instead.
+
+```{r}
+bathy <- find_matches(bbox)
+plot(bathy) # visually check this is the correct lake
+ha <- get_ha(bathy, points) # user may input their own raster instead of 'bathy' or set ha <- 'user H/A'
+
+if(!is.na(max_depth_allowed) & !is.null(max_depth_allowed)){
+  abs_z = ha$depths[1] - ha$depths
+  ha[which(abs_z <= max_depth_allowed), ]
+}
+
+bsn_dims <- get_bsn_dims(bathy)
+```
+
+### Get light extinction coefficient (Kw)
+
+The light extinction coefficient is estimated from Secchi depth data. The US dataset (using LAGOS US) is much more extensive than the global dataset. If the user's lake does not exist in these datasets, they may manually set Kw in the .yml based on general knowledge about the turbidity of the lake.
+
+```{r}
+# Search for lake in LAGOS US database
+if(kw_list$type == "us"){
+  if(is.na(kw_list$lake_row) || is.null(kw_list$lake_row)){
+    kw_list$lake_row <- 1
+  }
+  mylake_kw <- get_kw_US(bbox, validate = FALSE, lake_row = kw_list$lake_row)
+}else if(kw_list$type == "global"){
+  mylake_kw <- get_kw_global(bbox, validate = FALSE)
+}else{
+  if(!is.na(kw_list$value) & !is.null(kw_list$value)){
+    mylake_kw <- kw_list$value
+  }else{
+    stop("missing user specified kw value")
+  }
+}
+```
+
+### Update FLARE configuration files
+
+Based on the data downloaded above, this code chunk updates the GLM and configuration files for FLARE.
+
+```{r}
+yml <- yaml::read_yaml(file.path("configuration", config_set_name, config_flare_file))
+yml$location$site_id <- site_id
+yml$location$latitude <- points_df[[2]][1]
+yml$location$longitude <- points_df[[1]][1]
+yml$default_init$lake_depth <- rev(max(ha$depths) - min(ha$depths))
+modeled_depths <- seq(0, yml$default_init$lake_depth-1)
+#yml$default_init$temp <- rep(sed_data$water_temp_init[1], times = length(modeled_depths))
+#yml$default_init$temp_depths <- modeled_depths
+yml$model_settings$modeled_depths <- modeled_depths
+
+yaml::write_yaml(yml, file.path("configuration", config_set_name, config_flare_file))
+
+# create list of variable values & names for input to nml
+var_list <- list(site_id, mylake_kw, site_id, points_df[[2]][1], points_df[[1]][1],
+                 dim(ha)[1], rev(ha$depths), rev(ha$Area.at.z), rev(max(ha$depths) - min(ha$depths))-0.5,
+                 bsn_dims$bsn_len, bsn_dims$bsn_wid,
+                 sed_data$zone_heights, sed_data$nzones[1])
+var_name_list <- list("sim_name", "Kw", "lake_name", "latitude", "longitude",
+                      "bsn_vals", "H", "A", "lake_depth",
+                      "bsn_len", "bsn_wid",
+                      "zone_heights", "n_zones")
+
+# update nml
+update_nml(var_list, var_name_list,
+           working_directory = file.path("configuration", config_set_name), nml = 'glm3.nml')
+
+run_config <- yaml::read_yaml(file.path("configuration", config_set_name, configure_run_file))
+run_config$start_datetime <- inputs$start_datetime
+run_config$forecast_horizon <- inputs$forecast_horizon
+run_config$forecast_start_datetime <- inputs$forecast_start_datetime
+run_config$sim_name <- run_name
+
+dir.create(file.path("./restart", site_id, run_name), recursive = T)
+
+yaml::write_yaml(run_config, file = file.path("restart", site_id, run_name, configure_run_file))
+```
+
+### Run FLARE
+
+This line will run a FLARE forecast. The output plots may be found in /plots/YOUR LAKE NAME
+
+```{r}
+FLAREr::run_flare(lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name,
+                  clean_start = FALSE, sim_name = run_name)
 ```
