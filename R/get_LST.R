@@ -95,14 +95,15 @@ get_vals <- function(points, thermal_data){
   }
   # if only one point, add back in time column and rearrange to format
   if(length(vals_df) < 3){
-    if(nrow(vals_df) > 1){
-      vals_df$time <- st_dimensions(thermal_data)$time$values$start
-    } else{
-      vals_df$time <- st_dimensions(thermal_data)$time$offset
+    time <- st_dimensions(thermal_data)$time$values$start
+    if((is.null(time) || is.na(time))){
+      time <- st_dimensions(thermal_data)$time$offset
     }
+    vals_df$time <- time
     vals_df <- vals_df |>
       relocate(thermal_C, .after = time)
   }
+  
   # if multiple points, group same date points and get mean temp
   if(dim(points)[1] > 1){
     vals_df <- vals_df |>
