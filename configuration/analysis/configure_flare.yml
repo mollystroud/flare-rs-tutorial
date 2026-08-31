@@ -11,7 +11,7 @@ da_setup:
   no_negative_states: yes
   assimilate_first_step: no
   use_obs_constraint: yes
-  obs_filename: targets-insitu-rs.csv
+  obs_filename: wacc-targets-rs.csv
   use_inflation_factor: no
   inflation_factor: 1.08
   inflation_only_at_da: no
@@ -29,50 +29,11 @@ model_settings:
   - 3
   - 4
   - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 10
-  - 11
-  - 12
-  - 13
-  - 14
-  - 15
-  - 16
-  - 17
-  - 18
-  - 19
-  - 20
-  - 21
-  - 22
-  - 23
-  - 24
-  - 25
-  - 26
-  - 27
-  - 28
-  - 29
-  - 30
-  - 31
-  - 32
-  - 33
-  - 34
-  - 35
-  - 36
-  - 37
-  - 38
-  - 39
-  - 40
-  - 41
-  - 42
-  - 43
-  - 44
   par_config_file: parameter_calibration_config.csv
   obs_config_file: observations_config.csv
   states_config_file: states_config.csv
 default_init:
-  lake_depth: 45.0
+  lake_depth: 6.0
   temp:
   - 26.425
   - 26.425
