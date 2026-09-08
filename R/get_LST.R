@@ -41,7 +41,7 @@ get_lst <- function(bbox, start_date, end_date, points,
   if(!is.null(spinup_start) && !is.null(spinup_end)){
     n_spinup <- search_lst_items(bbox, spinup_start, spinup_end)
     if(n_spinup == 0){
-      message("There are no remote sensing images in your spinup period. We recommend adjusting or lengthening the spinup period so that at least one image is available, so that initial conditions are as accurate as possible.")
+      message("There are no remote sensing images in your spinup period. We recommend adjusting or lengthening the spinup period so that at least one image is available.")
     }
   }
   # grab items within dates of interest
@@ -59,11 +59,18 @@ get_lst <- function(bbox, start_date, end_date, points,
     return( )
   } else {
     message("Downloading Landsat Thermal data")
-    # filter out non LS8/9
+    # keep only Landsat 8/9 surface-temperature (L2SP) scenes, which carry the
+    # thermal lwir11 band; the collection also returns surface-reflectance (L2SR)
+    # scenes that do not
     items$features <- Filter(
-      function(f) f$properties$platform %in% c("landsat-8", "landsat-9"),
+      function(f) f$properties$platform %in% c("landsat-8", "landsat-9") &&
+        identical(f$properties$`landsat:correction`, "L2SP"),
       items$features
     )
+    if(length(items$features) == 0){
+      message("There are no cloud-free thermal images of this lake in the specified date range. Consider changing or expanding your date range.")
+      return( )
+    }
     # define the cube space
     cube <- cube_view(srs = "EPSG:4326",
                       extent = list(t0 = start_date,
