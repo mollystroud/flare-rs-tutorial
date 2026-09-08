@@ -13,9 +13,37 @@
 ls = stac("https://planetarycomputer.microsoft.com/api/stac/v1")
 
 ################################################################################
-# Function to create thermal stars object with specified dates and bbox
+# Lightweight STAC search: returns number of cloud-free Landsat 8/9 items in a
+# date range without downloading any raster data
 ################################################################################
-get_lst <- function(bbox, start_date, end_date, points) {
+search_lst_items <- function(bbox, start_date, end_date) {
+  items <- ls |>
+    stac_search(collections = "landsat-c2-l2",
+                bbox = bbox,
+                datetime = paste(start_date, end_date, sep="/"),
+                limit = 1000) |>
+    ext_query("eo:cloud_cover" < 30) |> #filter for cloud cover
+    post_request()
+  n_ls89 <- sum(vapply(items$features,
+                       function(f) f$properties$platform %in% c("landsat-8", "landsat-9"),
+                       logical(1)))
+  return(n_ls89)
+}
+
+################################################################################
+# Function to create thermal stars object with specified dates and bbox.
+# If spinup_start and spinup_end are provided, warns when no images fall within
+# that spinup period.
+################################################################################
+get_lst <- function(bbox, start_date, end_date, points,
+                    spinup_start = NULL, spinup_end = NULL) {
+  # check for images in the spinup period, if provided
+  if(!is.null(spinup_start) && !is.null(spinup_end)){
+    n_spinup <- search_lst_items(bbox, spinup_start, spinup_end)
+    if(n_spinup == 0){
+      message("There are no remote sensing images in your spinup period. We recommend adjusting or lengthening the spinup period so that at least one image is available, so that initial conditions are as accurate as possible.")
+    }
+  }
   # grab items within dates of interest
   items <- ls |>
     stac_search(collections = "landsat-c2-l2",
