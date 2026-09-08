@@ -30,8 +30,3 @@ sudo apt-get install -y python3 python3-pip python3-venv
 ```
 
 7.  Now, you are ready to begin setting up the tool! Open Tool_Setup.qmd and follow the instructions.
-
-## To do list
-
-- Generate initial temperature profile from user supplied information about whether it is stratified, a calculation of thermocline depth from fetch (fetch can be calculated using the bathyometry), and value for the deep water temperature. These can be combined to create a profile.
-- Get the SWOT depth working
