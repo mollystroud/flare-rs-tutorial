@@ -13,7 +13,7 @@ This code works best when run in a container. Below are the instructions for a u
 2.  Once installed, open both Docker and Terminal on your computer and run the following command in your Terminal:
 
 ```         
-docker run -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
+docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
 ```
 
 3.  Open your internet browser of choice and navigate to `http://localhost:8787/`.
