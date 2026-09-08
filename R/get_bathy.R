@@ -28,11 +28,20 @@ find_matches <- function(bbox){
   match <- index |>
     filter(xmin < mean_x & xmax > mean_x) |>
     filter(ymin < mean_y & ymax > mean_y)
-  if(nrow(match > 0)){
+  if(nrow(match) > 0){
+    # multiple overlapping rasters: keep the one whose bbox center is
+    # closest to the query point
+    match <- match |>
+      mutate(dist = sqrt(((xmin + xmax) / 2 - mean_x)^2 +
+                         ((ymin + ymax) / 2 - mean_y)^2)) |>
+      slice_min(dist, n = 1, with_ties = FALSE)
     print(match)
     bathy <- raster(paste0("https://amnh1.osn.mghpcc.org/bio230121-bucket01/GLOBathy/", match$file))
     return(bathy)
-  } else {message("No matches found")}
+  } else {
+    message("No matches found")
+    return(NULL)
+  }
 }
 
 get_ha <- function(bathy_raster, points){
