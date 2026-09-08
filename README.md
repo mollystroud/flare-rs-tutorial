@@ -22,7 +22,7 @@ docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e RO
 
 5.  Open this GitHub repository in the Docker. To do this, go to File -\> New Project, and select Version Control -\> Git. Then, paste in the GitHub repository url (<https://github.com/mollystroud/flare-rs-tutorial.git>) and click 'Create Project'. This may take a few minutes to load.
 
-6.  Navigate to the terminal in the Docker RStudio session (found near the bottom left of the screen). Type in the following commands:
+6.  Navigate to the terminal in the Docker RStudio session. Type in the following commands:
 
 ```         
 sudo apt-get update
