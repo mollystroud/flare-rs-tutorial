@@ -1,21 +1,21 @@
 start_datetime: 2026-07-01 00:00:00
-forecast_start_datetime: 2026-07-10  00:00:00
+forecast_start_datetime: 2026-07-14  00:00:00
 forecast_horizon: 5
 lakes:
   # four letter abbreviation of lake name
-  wacc:
+  ashf: # Ashfield Lake, MA
   # specify bounding box
     bbox:
-      left: -78.579977
-      bottom: 34.255503
-      right: -78.457754
-      top: 34.320036
+      left: -72.805127
+      bottom: 42.528490
+      right: -72.796330
+      top: 42.535542
     # pick representative point(s) of lake
     # for example, if your lake is a perfect circle, a good point would be the
     # middle of the circle
     focal_point:
-      lat: 34.290116
-      lon: -78.510283
+      lat: 42.531889
+      lon: -72.801415
    # If your lake of interest is in the US, set type: us
    # If your lake of interest is outside the US, set type: global
    # If your lake was unavailable in either of these databases,
@@ -27,4 +27,34 @@ lakes:
       type: us
       value: .na
       lake_row: 1
-    max_depth_allowed: 6
+    max_depth_allowed: 8 # meters
+    
+  # wacc: # Lake Waccamaw, NC, max depth 6 m
+  #   bbox:
+  #     left: -78.579977
+  #     bottom: 34.255503
+  #     right: -78.457754
+  #     top: 34.320036
+  #   focal_point:
+  #     lat: 34.290116
+  #     lon: -78.510283
+  #   Kw:
+  #     type: us
+  #     value: .na
+  #     lake_row: 1
+  #   max_depth_allowed: 8 # meters
+  
+  # bogl: # Bog Lake, Minnesota
+  #   bbox:
+  #     left: -91.399954
+  #     bottom: 47.777094
+  #     right: -91.378866
+  #     top: 47.790996
+  #   focal_point:
+  #     lat: 47.784366
+  #     lon: -91.390086
+  #   Kw:
+  #     type: us
+  #     value: .na
+  #     lake_row: 1
+  #   max_depth_allowed: .na # meters
