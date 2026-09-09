@@ -10,7 +10,11 @@ This code works best when run in a container. Below are the instructions for a u
 
 1.  If you do not already have Docker installed, download and install Docker [here](https://docs.docker.com/desktop/setup/install/mac-install/).
 
-2.  Once installed, open both Docker and Terminal on your computer and run the following command in your Terminal:
+2.  Once installed, open both Docker and Terminal on your computer and run the following commands in your Terminal:
+
+```         
+docker pull rqthomas/flare-rocker-open:3.9.0
+```
 
 ```         
 docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
@@ -22,11 +26,18 @@ docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e RO
 
 5.  Open this GitHub repository in the Docker. To do this, go to File -\> New Project, and select Version Control -\> Git. Then, paste in the GitHub repository url (<https://github.com/mollystroud/flare-rs-tutorial.git>) and click 'Create Project'. This may take a few minutes to load.
 
-6.  Navigate to the terminal in the Docker RStudio session. Type in the following commands:
+6.  Navigate to the terminal in the Docker RStudio session. Type in the following commands, one after the other:
 
 ```         
 sudo apt-get update
+```
+
+```         
 sudo apt-get install -y python3 python3-pip python3-venv
+```
+
+```         
+sudo apt-get install -y libglpk40
 ```
 
 7.  Now, you are ready to begin setting up the tool! Open Tool_Setup.qmd and follow the instructions.
