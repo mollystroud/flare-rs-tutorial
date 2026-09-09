@@ -17,7 +17,7 @@ docker pull rqthomas/flare-rocker-open:3.9.0
 ```
 
 ```         
-docker run --platform=linux/amd64 -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker:4.4 
+docker run -d -p 8787:8787 -e PASSWORD=yourpassword -e ROOT=TRUE --name FLARE_container rqthomas/flare-rocker-open:3.9.0
 ```
 
 3.  Open your internet browser of choice and navigate to `http://localhost:8787/`.
