@@ -139,14 +139,6 @@ start_date <- as_date(inputs$start_datetime)
 forecast_start_date <- as_date(inputs$forecast_start_datetime)
 forecast_end_date <- as_date(inputs$start_datetime) + days(inputs$forecast_horizon)
 
-# stage 2
-.run_get_met_py(
-  stage = "stage2",
-  site_id = site_id,
-  bbox = bbox,
-  reference_datetime = forecast_start_date
-)
-
 # stage 3
 .run_get_met_py(
   stage = "stage3",
@@ -154,6 +146,14 @@ forecast_end_date <- as_date(inputs$start_datetime) + days(inputs$forecast_horiz
   bbox = bbox,
   reference_datetime = start_date,
   end_date = forecast_start_date
+)
+
+# stage 2
+.run_get_met_py(
+  stage = "stage2",
+  site_id = site_id,
+  bbox = bbox,
+  reference_datetime = forecast_start_date
 )
 ```
 
@@ -239,9 +239,12 @@ yaml::write_yaml(run_config, file = file.path("restart", site_id, run_name, conf
 
 ### Run FLARE
 
-This line will run a FLARE forecast. The output plots may be found in /plots/YOUR LAKE NAME
+This line will run a FLARE forecast. The output plots may be found in /plots/YOUR LAKE NAME.
 
 ```{r}
+# If you get an error here, you may need to install the latest version of FLARE
+# remotes::install_github("FLARE-forecast/FLAREr")
+
 FLAREr::run_flare(lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name,
                   clean_start = FALSE, sim_name = run_name)
 ```
