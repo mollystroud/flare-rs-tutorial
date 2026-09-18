@@ -6,7 +6,7 @@ editor: visual
 
 ## Overview
 
-This tutorial walks the user through the initial setup of the Forecasting Lake And Reservoir Ecosystems (FLARE) user tool. This tutorial instructs the user on installing the necessary packages, setting up the .yml, checking for remote sensing data availability, downloading bathymetry, estimating light extinction coefficient, and running a short FLARE forecast.
+This tutorial walks the user through the initial setup of the Forecasting Lake And Reservoir Ecosystems (FLARE) user tool. This tutorial instructs the user on installing the necessary packages, setting up the .yml, checking for remote sensing data availability, downloading bathymetry, estimating light extinction coefficient, estimating initial water temperature conditions, and running a short FLARE forecast.
 
 Both this tutorial file and other code in the repository are best run in a Docker container. The README file contains instructions for a Mac user to run this code in a Docker.
 
@@ -14,20 +14,25 @@ After finishing this setup and confirming data availability, the user may go to 
 
 ### Install packages
 
-If you are running this in the provided Docker (recommended), some packages are already installed. If you are running this outside of the contained, you will need to install all packages.
+If you are running this for the first time, you will need to install all packages. Otherwise, you can skip to loading the libraries.
 
 ```{r}
-# remotes::install_github('rqthomas/GLM3r')
-# remotes::install_github("FLARE-forecast/FLAREr")
+remotes::install_github('rqthomas/GLM3r')
+remotes::install_github("FLARE-forecast/FLAREr")
+remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
+remotes::install_github("FLARE-forecast/ropenmeteo", force = T, upgrade = "never")
 install.packages('pacman')
+```
+
+Load libraries
+
+```{r}
 pacman::p_load('rstac', 'terra', 'stars',
                'ggplot2', 'tidyterra', 'viridis',
                'yaml','gdalcubes', 'tmap', 'dplyr',
                'tidyverse', 'sf','arrow', 'raster',
                'elevatr', 'marmap', 'rLakeAnalyzer',
                'httr', 'jsonlite', 'readr')
-remotes::install_github('usgs-r/glmtools', force = T, upgrade = 'never')
-remotes::install_github("FLARE-forecast/ropenmeteo", force = T, upgrade = "never")
 library(glmtools)
 library(ropenmeteo)
 library(FLAREr)
@@ -58,8 +63,8 @@ configure_run_file <- "configure_run.yml"
 use_s3 <- FALSE
 lake_directory <- here::here()
 # Point FLARE to GLM location
-# Sys.setenv('GLM_PATH' = paste0(lake_directory, '/binary/macos/glm')) # if running on local computer
-Sys.setenv('GLM_PATH' = '/glm') # if running in FLARE rocker
+Sys.setenv('GLM_PATH' = paste0(lake_directory, '/binary/macos/glm')) # if running on local computer
+#Sys.setenv('GLM_PATH' = '/glm') # if running in FLARE rocker
 options(future.globals.maxSize = 891289600)
 # Get scripts needed to run this code
 inputs <- read_yaml("configure_rs_run.yml")
@@ -118,7 +123,7 @@ write_csv(output, paste0('targets/', site_id, '/', site_id, '-targets-rs.csv'))
 This will download water surface elevation data from the SWOT satellite.
 
 ```{r}
-swot_data <- get_swot(bbox, 
+swot_data <- get_swot(bbox,
                       start_date = as.Date(inputs$start_date),
                       end_date = as.Date(inputs$forecast_start_datetime) + days(inputs$forecast_horizon),
                       site_id)
@@ -208,8 +213,6 @@ yml$location$latitude <- points_df[[2]][1]
 yml$location$longitude <- points_df[[1]][1]
 yml$default_init$lake_depth <- rev(max(ha$depths) - min(ha$depths))
 modeled_depths <- seq(0, yml$default_init$lake_depth-1)
-#yml$default_init$temp <- rep(sed_data$water_temp_init[1], times = length(modeled_depths))
-#yml$default_init$temp_depths <- modeled_depths
 yml$model_settings$modeled_depths <- modeled_depths
 yml$da_setup$obs_filename <- paste0(site_id, "-targets-rs.csv")
 
